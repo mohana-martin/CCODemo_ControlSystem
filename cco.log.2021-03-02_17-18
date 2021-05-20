@@ -1,0 +1,9 @@
+2021-03-02 16:18:57,936 - root - INFO - Started
+2021-03-02 16:18:57,953 - tcs.checker - INFO - Creating CheckerMaster.
+2021-03-02 16:18:57,953 - tcs.mashina - INFO - Creating TCS Mashina
+2021-03-02 16:18:57,958 - tcs_statemashina.statemashina - INFO - Creating TCS State Mashina
+2021-03-02 16:18:57,958 - tcs_statemashina.statemashina - DEBUG - Configuration: C:/Users/mohanam/PycharmProjects/CCODemoControlSystem/config.json checked at every 1000 ms.
+2021-03-02 16:18:57,958 - tcs_statemashina.statemashina - INFO - Getting new configuration.
+2021-03-02 16:18:57,958 - tcs_statemashina.statemashina - DEBUG - Configuration: {'Neutral': {'Charge': {'TICA-101': {'lowlimit': 50, 'der': 0, 'acc': 0, 'window': 1, 'interval': 1000}}, 'Discharge': {'TICA-101': {'highlimit': 20, 'der': 0, 'acc': 0, 'window': 1, 'interval': 1000}}}, 'Charging': {'AD': {'Phase 1A': {'TICA-102': {'highlimit': 5, 'der': 1, 'acc': 4, 'window': 2, 'interval': 1000}, 'FICA-111': {'lowlimit': 200, 'der': 0, 'acc': 5, 'window': 2, 'interval': 1000}}, 'Phase 1B': {'limit': 40, 'deltaT': 5, 'flow': 200, 'TICA-101': {'highlimit': 40, 'der': 1, 'acc': 4, 'window': 2, 'interval': 1000}, 'FICA-111': {'lowlimit': 200, 'der': 0, 'acc': 5, 'window': 2, 'interval': 1000}}}}}
+2021-03-02 16:18:57,959 - tcs_statemashina.statemashina - INFO - Initializing the configuration checker timer.
+2021-03-02 16:18:57,959 - tcs_statemashina.statemashina - DEBUG - Interval 1000
