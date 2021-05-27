@@ -1,5 +1,7 @@
 import pandas as pd
 
+from copy import deepcopy
+
 import findiff
 from collections import deque
 import numpy as np
@@ -65,13 +67,14 @@ class GeneralChecker(QObject):
                          "interval": 1000
                          }
 
-    def __init__(self, func, settings):
+    def __init__(self, func, settings, name=""):
         super().__init__()
         self._func_ = func
         self.logger = logging.getLogger(__name__)
         self.logger.info("Creating checker")
         self.logger.debug(f"Creating checker with the following settings {settings}.")
         self._parameters = settings
+        self.setObjectName(name)
         self._timer_ = None
         self._update_parameters()
         self._setup_der_coef()
@@ -138,6 +141,7 @@ class GeneralChecker(QObject):
         checker object.
         """
         try:
+            self.logger.debug("Getting latest data.")
             self.data = pd.read_excel(r"C:/Users/mohanam/Desktop/ToDO/CCO_Demo/cRIOTagSimDB.xlsx", index_col=0)
         except:
             pass
@@ -188,6 +192,7 @@ class CheckerMaster(object):
         self.logger = logging.getLogger(__name__)
         self.logger.info("Creating CheckerMaster.")
         self._checkers_ = {}
+        self._status_ = {}
 
     def stop(self, name=None):
         if not name:
@@ -207,6 +212,20 @@ class CheckerMaster(object):
     def __setitem__(self, name, value):
         self._checkers_[name] = value
 
+    def addChecker(self, checker):
+        if checker.objectName():
+            self._checkers_[checker.objectName()] = checker
+            self._status_[checker.objectName()] = False
+        else:
+            raise NameError("GeneralChecker is missing a name. Try initializing GeneralChecker with a name.")
+
+    def changeStatus(self, checker_name, status):
+        self._status_[checker_name] = status
+
     @property
-    def active(self):
-        return list(self._checkers_.keys())
+    def activeCheckers(self):
+        return list(self._checkers_.values())
+
+    @property
+    def statusCheckers(self):
+        return deepcopy(self._status_)

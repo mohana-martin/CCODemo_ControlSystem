@@ -1,5 +1,0 @@
-import tcs_statemashina.neutral
-import tcs_statemashina.other
-import tcs_statemashina.statemashina
-import tcs_statemashina.charging
-import tcs_statemashina.discharging

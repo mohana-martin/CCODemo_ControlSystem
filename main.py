@@ -1,19 +1,18 @@
 import sys
 
-from PyQt5.QtCore import (QCoreApplication, QState, QTimer)
-from PyQt5.QtWidgets import (QApplication, QMainWindow)
+from PyQt5.QtCore import (QState, QTimer)
+from PyQt5.QtWidgets import (QApplication)
 
-import logging
 import logging.handlers
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 
-from tcs import mashina
-import tcs_statemashina
+from tools.tcs import mashina
+from tools import tcs_statemashina
 
 ch = logging.StreamHandler()
 ch.setLevel(logging.INFO)
-fh = logging.handlers.TimedRotatingFileHandler("cco.log", when='m', interval=1, backupCount=2)
+fh = logging.handlers.TimedRotatingFileHandler(r"\\log\\cco.log", when='m', interval=1, backupCount=2)
 fh.setLevel(logging.DEBUG)
 
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -25,7 +24,7 @@ logger.addHandler(fh)
 
 logging.info('Started')
 
-configPath = r"C:/Users/mohanam/PycharmProjects/CCODemoControlSystem/config.json"
+configPath = r"config.json"
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

@@ -1,7 +1,7 @@
 from PyQt5.QtCore import (QObject, QTimer, pyqtSignal)
 
-from .checker import GeneralChecker as Checker
-from .checker import CheckerMaster
+from tools.general.checker import GeneralChecker as Checker
+from tools.general.checker import CheckerMaster
 
 import logging
 
@@ -46,9 +46,13 @@ class TCSMashina(QObject):
 
     def neutral(self):
         # Turn off all the equipment related to TCS?
-        self.checkers["Charge"] = Checker(lambda x: x["TICA-101"], {"lowlimit": 50})
+        self.checkers.addChecker(Checker(func=lambda x: x["TICA-101"],
+                                         settings={"lowlimit": 50},
+                                         name="Charge"))
         self.checkers["Charge"].inLimit.connect(self._charge_)
-        self.checkers["Discharge"] = Checker(lambda x: x["TICA-101"], {"highlimit": 20})
+        self.checkers.addChecker(Checker(func=lambda x: x["TICA-101"],
+                                         settings={"highlimit": 20},
+                                         name="Discharge"))
         self.checkers["Discharge"].inLimit.connect(self._discharge_)
 
     def _charge_(self):
@@ -66,11 +70,15 @@ class TCSMashina(QObject):
         self.logger.info("Setting P-111 to manual mode with a CV of 100%.")
         # Flow checker
         self.logger.info(f"Checking if flow does not go below {Flimit['lowlimit']} m3/h.")
-        self.checkers["SufficientF"] = Checker(lambda x: x["P-101"], Flimit)
+        self.checkers.addChecker(Checker(func=lambda x: x["P-101"],
+                                         settings=Flimit,
+                                         name="SufficientF"))
         self.checkers["SufficientF"].outLimit.connect(self._error_)
         # Goal checker
         self.logger.info(f"Waiting until change of temperature reaches {Tlimit['highlimit']} degC/s.")
-        self.checkers["StableADTemp"] = Checker(lambda x: x["TICA-102"], Tlimit)
+        self.checkers.addChecker(Checker(func=lambda x: x["TICA-102"],
+                                         settings=Tlimit,
+                                         name="StableADTemp"))
         self.checkers["StableADTemp"].inLimit.connect(self._stableT_)
 
     def _stableT_(self):
@@ -88,25 +96,35 @@ class TCSMashina(QObject):
         self.logger.info(f"Setting pump P-111 to automatic mode with a setpoint of {flow} m3/h.")
         # Flow checker
         self.logger.info(f"Checking if flow does not go below {Flimit['lowlimit']} m3/h.")
-        self.checkers["SufficientF"] = Checker(lambda x: x["P-101"], Flimit)
+        self.checkers.addChecker(Checker(func=lambda x: x["P-101"],
+                                         settings=Flimit,
+                                         name="SufficientF"))
         self.checkers["SufficientF"].outLimit.connect(self._error_)
         # Goal checker
         self.logger.info(f"Waiting until temperature reaches {Tlimit['lowlimit']} degC.")
-        self.checkers["SufficientT"] = Checker(lambda x: x["TICA-101"], Tlimit)
+        self.checkers.addChecker(Checker(func=lambda x: x["TICA-101"],
+                                         settings=Tlimit,
+                                         name="SufficientT"))
         self.checkers["SufficientT"].inLimit.connect(self._reachedT_)
 
     def heatConstTempTo(self, T, Tlimit, Flimit, Plimit, flow=300):
         self.logger.info(f"Setting MV-101 to automatic mode with a setpoint of {T} degC.")
         self.logger.info(f"Setting pump P-111 to automatic mode with a setpoint of {flow} m3/h.")
         # Flow checker
-        self.checkers["SufficientF"] = Checker(lambda x: x["P-101"], **Flimit)
+        self.checkers.addChecker(Checker(func=lambda x: x["P-101"],
+                                         settings=Flimit,
+                                         name="SufficientF"))
         self.checkers["SufficientF"].outLimit.connect(self._error_)
         # Temperature into mixing valve checker
-        self.checkers["SufficientTin"] = Checker(lambda x: T - x["TICA-101"], **Tlimit)
+        self.checkers.addChecker(Checker(func=lambda x: T - x["TICA-101"],
+                                         settings=Tlimit,
+                                         name="SufficientTin"))
         self.checkers["SufficientTin"].outLimit.connect(self._error_)
         # Goal checker
         myFunc = lambda x: 4.2 * x["FICA-131.PV"] * (x["TICA-101"] - x["TICA-102"]) / 3.6
-        self.checkers["SufficientP"] = Checker(myFunc, **Plimit)
+        self.checkers.addChecker(Checker(func=myFunc,
+                                         settings=Plimit,
+                                         name="SufficientP"))
         self.checkers["SufficientP"].inLimit.connect(self._reachedP_)
 
     def storageValve(self, state):

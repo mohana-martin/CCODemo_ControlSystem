@@ -17,8 +17,8 @@ class TCSStateMashina(QStateMachine):
         self.tcs = tcsmashina
         self._constPath_ = constpath
         self._timerInterval = interval
+        self.constants = None
         self._load_constants_()
-        self.constants = {}
         self._setup_timer_()
 
     def _setup_timer_(self):
@@ -36,7 +36,7 @@ class TCSStateMashina(QStateMachine):
                 self.constants = json.load(file)
                 self.logger.debug(f"Configuration: {self.constants}")
         except Exception as E:
-            self.logger.critical(f"Latest configuration not loaded!")
+            self.logger.critical(f"Latest configuration not loaded!: {E}")
 
     def stop_timers(self):
         self.tcs.checkers.stop()
