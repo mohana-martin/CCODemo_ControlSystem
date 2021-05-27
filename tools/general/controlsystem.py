@@ -6,6 +6,7 @@ Created on Thu May 27 13:27:36 2021
 """
 
 from functools import partial
+from types import MethodType
 import datetime as dt
 
 from cRIO_comms.cRIOFormats import cRIOSetpoint
@@ -75,17 +76,18 @@ class Attribute(object):
         
         if "Settable" in properties:
                 if properties["Settable"]:
-                    setattr(self, f"set_Value", partial(self._set_Value, obj=self, x=iPropertyName))
+                    setattr(self, "set_Value", partial(self._set_Value, obj=self))
     
     @staticmethod
     def _get_x(obj, x):
         return getattr(obj, f"_{x}")
     
     def get_Value(self):
-        return self.system.getLatestData[self.tag]
-
-    def _set_Value(self, x):
-        self.system.crio_communication.setSetpoint(cRIOSetpoint(self.tag, x))
+        return self.system.getLastData()[self.tag]
+    
+    @staticmethod
+    def _set_Value(obj, x):
+        obj.system.crio_communication.setSetpoint(cRIOSetpoint(obj.tag, x))
 
 
 class Tag(object):
