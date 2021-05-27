@@ -10,13 +10,13 @@ from types import MethodType
 import datetime as dt
 
 from cRIO_comms.cRIOFormats import cRIOSetpoint
-from cRIO_comms.cRIOCommunication import cRIOCaryaV1
+from cRIO_comms.cRIOCommunication import cRIOWebServerComms
 
 
 class ControlSystem(object):
     
     def __init__(self, **kwargs):
-        self.crio_communication = cRIOCaryaV1(**kwargs)
+        self.crio_communication = cRIOWebServerComms(**kwargs)
         self.getCurrentData()
         sys = self.crio_communication.getSystemInformation()
         
