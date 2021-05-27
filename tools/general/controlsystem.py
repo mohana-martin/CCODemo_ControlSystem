@@ -16,7 +16,6 @@ from cRIO_comms.cRIOCommunication import cRIOWebServerComms
 class ControlSystemMap(object):
     
     def __init__(self, **kwargs):
-        self.crio_communication = cRIOWebServerComms(**kwargs)
         '''
         Starts up the communication, gets the current data and constructs a map
         of the control system in question.
@@ -25,7 +24,7 @@ class ControlSystemMap(object):
         ip: str
             the ip address of the cRIO
         '''
-        self.crio_communication = cRIOCaryaV1(**kwargs)
+        self.crio_communication = cRIOWebServerComms(**kwargs)
         self.getCurrentData()
         sys = self.crio_communication.getSystemInformation()
         
@@ -98,7 +97,7 @@ class Attribute(object):
         for iProperty, iValue in properties.items():
             iPropertyName = iProperty.replace(".","_")
             setattr(self, f"_{iPropertyName}", iValue)
-            setattr(self, f"get_{iPropertyName}", partial(self._get_x, obj=self, x=iPropertyName))
+            setattr(self, f"get_{iPropertyName}", partial(self._get_x, x=iPropertyName, obj=self))
         
         if "Settable" in properties:
                 if properties["Settable"]:
@@ -112,7 +111,10 @@ class Attribute(object):
         return self.system.getLastData()[self.tag]
     
     @staticmethod
-    def _set_Value(obj, x):
+    def _set_Value(x, obj):
+        if hasattr(obj, "get_Range_Min") and hasattr(obj, "get_Range_Max"):
+            if not(obj.get_Range_Min() <= x <= obj.get_Range_Max()):
+                raise ValueError("Command not sent. Value seems to be out of bounds.")
         obj.system.crio_communication.setSetpoint(cRIOSetpoint(obj.tag, x))
 
 
