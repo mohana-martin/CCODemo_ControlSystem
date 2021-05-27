@@ -13,10 +13,22 @@ from cRIO_comms.cRIOFormats import cRIOSetpoint
 from cRIO_comms.cRIOCommunication import cRIOWebServerComms
 
 
-class ControlSystem(object):
+class ControlSystemMap(object):
     
     def __init__(self, **kwargs):
+<<<<<<< Updated upstream
         self.crio_communication = cRIOWebServerComms(**kwargs)
+=======
+        '''
+        Starts up the communication, gets the current data and constructs a map
+        of the control system in question.
+        Parameters
+        ----------
+        ip: str
+            the ip address of the cRIO
+        '''
+        self.crio_communication = cRIOCaryaV1(**kwargs)
+>>>>>>> Stashed changes
         self.getCurrentData()
         sys = self.crio_communication.getSystemInformation()
         
@@ -65,6 +77,23 @@ class ControlSystem(object):
 class Attribute(object):
     
     def __init__(self, control_system, full_tag, **properties):
+        '''
+        Holds an attribute of a Tag and its properties.
+        E.g. MV-101.On-Out has properties like Settable, Unit, etc.
+        It is therefore Tag Attribute Properties. Default properties are Value.
+        set_Value appears only when the property is Settable.
+        
+        Parameters
+        ----------
+        control_system: ControlSystemMap
+            contains the link to the communication wrapper to the cRIO
+        full_tag: str
+            important, as it is used as a reference for getting and setting the
+            value
+        **properties: dict
+            contains keys and values of the properties of the attribute which 
+            will be saved in this object.
+        '''
         self.system = control_system
         self.tag = full_tag
         self.key = "_".join(full_tag.split(".")[1:])
@@ -93,6 +122,21 @@ class Attribute(object):
 class Tag(object):
     
     def __init__(self, control_system, tag, **attributes):
+        '''
+        Holds a tag with it attributes and its properties.
+        E.g. MV-101.On-Out has properties like Settable, Unit, etc.
+        It is therefore Tag Attribute Properties. Default properties are Value.
+        set_Value appears only when the property is Settable.
+        
+        Parameters
+        ----------
+        control_system: ControlSystemMap
+            contains the link to the communication wrapper to the cRIO
+        tag: str
+        **attributes: dict
+            contains keys and values of the attributes with their properties
+            which will be saved in this object and Attributes constructed.
+        '''
         self.system = control_system
         self.tag = tag
         
