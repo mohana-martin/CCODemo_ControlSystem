@@ -16,9 +16,7 @@ from cRIO_comms.cRIOCommunication import cRIOWebServerComms
 class ControlSystemMap(object):
     
     def __init__(self, **kwargs):
-<<<<<<< Updated upstream
         self.crio_communication = cRIOWebServerComms(**kwargs)
-=======
         '''
         Starts up the communication, gets the current data and constructs a map
         of the control system in question.
@@ -28,7 +26,6 @@ class ControlSystemMap(object):
             the ip address of the cRIO
         '''
         self.crio_communication = cRIOCaryaV1(**kwargs)
->>>>>>> Stashed changes
         self.getCurrentData()
         sys = self.crio_communication.getSystemInformation()
         
