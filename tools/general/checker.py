@@ -155,8 +155,12 @@ class GeneralChecker(QObject):
         boolean
         """
         self.logger.debug(f"Latest list of check variable: {self._finalylist_}.")
-        return self.par["lowlimit"] < np.nanmean(self._finalylist_) < self.par["highlimit"]
-
+        return self.par["lowlimit"] < self.checkValue < self.par["highlimit"]
+    
+    @property
+    def checkValue(self):
+        return np.nanmean(self._finalylist_)
+    
     def _run_(self):
         r"""Obtains the latests data, does the processing and saves the results in a list.
         """
