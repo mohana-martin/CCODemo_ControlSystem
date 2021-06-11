@@ -32,7 +32,7 @@ class ControlSystemMap(object):
             iDict = {}
             for iTag, iAttributes in iTagDict.items():
                 iDict[iTag] = Tag(self, tag=iTag,**iAttributes)
-            setattr(self, iGroup, iDict)
+            setattr(self, iGroup.replace(" ","_"), iDict)
     
     
     def getCurrentData(self):
@@ -142,3 +142,35 @@ class Tag(object):
         for iAttribute, iProperties in attributes.items():
             iAttributeName = "_".join(iAttribute.split(".")[1:]).replace(".","_").replace("-","_")
             setattr(self, f"{iAttributeName}", Attribute(control_system, iAttribute, **iProperties))
+            
+if __name__ == "__main__":
+    c = ControlSystemMap(ip='http://10.120.210.251:8002/cRIO-Webservice/')
+    MV = c.Controllers["TICSA-123"]
+    MV.Auto.get_Settable()
+    
+    _loops = {
+    "Solar": {"Flow":"FI-532",
+               "T_in": "TI-521a",
+               "T_out": "TI-521b"},
+     "HX": {"Flow":"FICSA-031",
+            "T_in": "TI-021a",
+            "T_out": "TI-021b"},
+     "Boiler": {"Flow":"FICSA-031",
+                "T_in": "TI-022a",
+                "T_out": "TI-022b"},
+     "TCS_Hot": {"Flow":"FICSA-131",
+                 "T_in": "TIA-121a",
+                 "T_out": "TIA-121b"},
+     "TCS_Cold": {"Flow":"FI-532",
+                  "T_in": "TI-221a",
+                  "T_out": "TISA-221b"},
+      "Shower": {"Flow":"FI-431",
+                 "T_in": "TI-421a",
+                 "T_out": "TI-422b"}
+              }
+     
+    loops = {}
+    for iLoop, iSensors in _loops.items():
+        loops[iLoop] = {"Flow": c.Process_Values[iSensors["Flow"]].PV.get_Value,
+                         "dT": partial(lambda x: c.Process_Values[x["T_out"]].PV.get_Value() - c.Process_Values[x["T_in"]].PV.get_Value(),x=iSensors)}
+        loops[iLoop]["Power"] = partial(lambda x: loops[x]["Flow"]() * loops[x]["dT"]() * 4200 / 3600, x=iLoop)
